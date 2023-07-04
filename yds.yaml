@@ -1,0 +1,32 @@
+model_name: transaction-cycles-model
+domain: yoltapp
+model_bucket: yolt-dp-{{ env }}-datascience-yoltapp-yts-transaction-cycles-model
+aws_iam_role_name: YoltDatascienceSagemakerYoltappYtsTransactionCyclesModel
+# Dir name of the package dir. This dir should be located in the repo root! It will be used
+# to package the model code into an archive.
+package_dir: transaction_cycles_model
+airflow_dag_file:
+  - "dags/transaction_cycles_train_dag.py"
+
+preprocessing:
+  processing_type: spark
+  entrypoint: "transaction_cycles_model/preprocessing/main.py"
+  job_docker_image: "{{ docker_registry }}/datascience/yds-pyspark-preprocessing:466d311f"
+  sagemaker_processor_kwargs:
+    volume_size_in_gb: 30
+    max_runtime_in_seconds: 7200
+  spark_config:
+    spark.driver.memory: "30g"
+    spark.driver.maxResultSize: "64g"
+  script_config:
+    model: transaction-cycles
+    some: config value
+    can_put: anything here
+
+training:
+  training_type: scikit
+  job_docker_image: "{{ docker_registry }}/datascience/yds-scikit-training:466d311f"
+  entrypoint: "transaction_cycles_model/training/main.py"
+  additional_requirements_file: training_requirements.txt
+  sagemaker_processor_kwargs:
+    max_run: 43200

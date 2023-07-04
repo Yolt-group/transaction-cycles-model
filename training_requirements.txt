@@ -1,0 +1,3 @@
+--index-url https://nexus.yolt.io:443/repository/pypi-group/simple
+s3fs==2021.8.1
+lightgbm==3.0.0
